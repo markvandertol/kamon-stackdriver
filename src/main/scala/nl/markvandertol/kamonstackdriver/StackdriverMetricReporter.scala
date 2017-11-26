@@ -46,7 +46,7 @@ class StackdriverMetricReporter extends MetricReporter {
       allSeriesSplit.foreach { series =>
         val request = CreateTimeSeriesRequest.newBuilder()
           .addAllTimeSeries(series.asJava)
-          .setNameWithProjectName(ProjectName.create(projectId))
+          .setNameWithProjectName(ProjectName.of(projectId))
           .build()
         writeSeries(request)
       }

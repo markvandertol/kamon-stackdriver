@@ -4,7 +4,7 @@ import java.nio.ByteBuffer
 import java.util.concurrent.ThreadLocalRandom
 
 import kamon.trace.IdentityProvider
-import kamon.trace.IdentityProvider.{Generator, Identifier}
+import kamon.trace.IdentityProvider.{ Generator, Identifier }
 import kamon.util.HexCodec
 
 import scala.util.Try

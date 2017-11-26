@@ -1,6 +1,6 @@
 #Kamon-Stackdriver
 
-Kamon-Stackdriver is a library to reports metrics collected by [Kamon](https://github.com/kamon-io/Kamon) to
+Kamon-Stackdriver is a library to report metrics collected by [Kamon](https://github.com/kamon-io/Kamon) to
 [Google Stackdriver](https://cloud.google.com/stackdriver/). It supports both
 [Trace](https://cloud.google.com/trace/docs/) and [Monitoring](https://cloud.google.com/monitoring/docs/).
 
@@ -10,7 +10,7 @@ Supported releases and dependencies are shown below.
 
 | kamon  | status | jdk  | scala            | google-cloud-monitoring | google-cloud-trace |
 |:------:|:------:|:----:|:----------------:|:----------------:|:----------------:|
-|  1.0.0-RC | unstable | 1.8+ | 2.10, 2.11, 2.12  | 0.25.0-alpha | 0.25.0-alpha
+|  1.0.0-RC4 | unstable | 1.8+ | 2.10, 2.11, 2.12  | 0.30.0-beta | 0.30.0-beta
 
 This library isn't available in as a JAR in a repository at this phase.
 
