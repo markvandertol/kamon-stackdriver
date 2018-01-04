@@ -4,10 +4,9 @@ import com.google.api.MetricDescriptor.MetricKind
 import com.google.api.{ Metric, MonitoredResource }
 import com.google.cloud.monitoring.v3.{ MetricServiceClient, MetricServiceSettings }
 import com.google.monitoring.v3.{ CreateTimeSeriesRequest, Point, ProjectName, TimeInterval, TimeSeries, TypedValue }
-import com.google.protobuf.Timestamp
 import com.typesafe.config.Config
 import kamon.{ Kamon, MetricReporter }
-import kamon.metric.{ MetricDistribution, MetricValue, TickSnapshot }
+import kamon.metric.{ MetricDistribution, MetricValue, PeriodSnapshot }
 import kamon.util.CallingThreadExecutionContext
 import org.slf4j.LoggerFactory
 
@@ -28,15 +27,15 @@ class StackdriverMetricReporter extends MetricReporter {
   private var histogramToDistributionConverter: HistogramToDistributionConverter = _
   private var resource: MonitoredResource = _
 
-  def reportTickSnapshot(snapshot: TickSnapshot): Unit = {
+  def reportPeriodSnapshot(snapshot: PeriodSnapshot): Unit = {
     val interval = TimeInterval.newBuilder()
-      .setEndTime(timeToTimestamp(snapshot.interval.to))
+      .setEndTime(instantToTimestamp(snapshot.from))
       .build()
 
     val histogramSeries = snapshot.metrics.histograms.map(v => histogram(v, interval))
     val counterSeries = snapshot.metrics.counters.map(v => counters(v, interval))
     val gaugeSeries = snapshot.metrics.gauges.map(v => counters(v, interval))
-    val minMaxSeries = snapshot.metrics.minMaxCounters.map(v => histogram(v, interval))
+    val minMaxSeries = snapshot.metrics.rangeSamplers.map(v => histogram(v, interval))
 
     val allSeries: Seq[TimeSeries] = histogramSeries ++ counterSeries ++ gaugeSeries ++ minMaxSeries
 
@@ -69,13 +68,6 @@ class StackdriverMetricReporter extends MetricReporter {
       case Success(_) => //ok
       case Failure(e) => logger.error("Failed to send TimeSeries", e)
     }
-  }
-
-  private def timeToTimestamp(timeInMilliseconds: Long): Timestamp = {
-    Timestamp.newBuilder()
-      .setSeconds(timeInMilliseconds / 1000)
-      .setNanos((timeInMilliseconds % 1000).toInt * 1000000)
-      .build()
   }
 
   private def newTimeSeries(name: String, tags: kamon.Tags, typedValue: TypedValue, timeInterval: TimeInterval) = {
@@ -122,7 +114,12 @@ class StackdriverMetricReporter extends MetricReporter {
         new ExponentialBucket(
           numFiniteBuckets = config.getInt("num-finite-buckets"),
           growthFactor = config.getDouble("growth-factor"),
-          scale = config.getDouble("growth-factor"))
+          scale = config.getDouble("scale"))
+      case "linear" =>
+        new LinearBucket(
+          numFiniteBuckets = config.getInt("num-finite-buckets"),
+          width = config.getDouble("width"),
+          offset = config.getDouble("offset"))
       case _ =>
         throw new IllegalArgumentException(s"Unknown bucket type: $bucketType")
     }

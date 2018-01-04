@@ -89,8 +89,8 @@ class StackdriverSpanReporter extends SpanReporter {
     val traceID = span.context.traceID.string
 
     val traceSpan = TraceSpan.newBuilder()
-      .setStartTime(timeToTimestamp(span.startTimestampMicros))
-      .setEndTime(timeToTimestamp(span.endTimestampMicros))
+      .setStartTime(instantToTimestamp(span.from))
+      .setEndTime(instantToTimestamp(span.to))
       .putAllLabels(tagsToLabels(span.tags).asJava)
       .setName(span.operationName)
 
@@ -116,13 +116,6 @@ class StackdriverSpanReporter extends SpanReporter {
     } else {
       None
     }
-  }
-
-  private def timeToTimestamp(timeInMicroseconds: Long): Timestamp = {
-    Timestamp.newBuilder()
-      .setSeconds(timeInMicroseconds / 1000000)
-      .setNanos((timeInMicroseconds % 1000000).toInt * 1000)
-      .build()
   }
 
   def start(): Unit = {

@@ -11,7 +11,6 @@ lazy val root = (project in file(".")).
     name := "Kamon-Stackdriver",
     crossScalaVersions := Seq("2.12.4", "2.11.12", "2.10.7"),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
-    resolvers += Resolver.bintrayRepo("kamon-io", "snapshots"),
     libraryDependencies ++= List(
       specs2 % Test,
       kamon,

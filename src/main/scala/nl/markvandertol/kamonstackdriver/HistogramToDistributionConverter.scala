@@ -45,7 +45,7 @@ class ExponentialBucket(numFiniteBuckets: Int, growthFactor: Double, scale: Doub
 
   protected def valueToBucketIndex(value: Long): Int = {
     // Lower bound (1 <= i < N): scale * (growthFactor ^ (i - 1))
-    val result = (Math.log(value / scale) / growthFactorLog).toInt + 1
+    val result = (Math.log(value / scale) / growthFactorLog + 1.0).toInt
     //toInt correctly deals with values outside of the Int range for this use case
 
     if (result < 0) {
@@ -69,4 +69,33 @@ class ExponentialBucket(numFiniteBuckets: Int, growthFactor: Double, scale: Doub
       .build()
   }
 
+}
+
+class LinearBucket(numFiniteBuckets: Int, width: Double, offset: Double) extends HistogramToDistributionConverter {
+  private val bucketCount = numFiniteBuckets + 2
+
+  protected def valueToBucketIndex(value: Long): Int = {
+    // Lower bound (1 <= i < N): offset + (width * (i - 1))
+    val result = ((value - offset) / width + 1.0).toInt
+
+    if (result < 0) {
+      0
+    } else if (result >= bucketCount) {
+      bucketCount - 1
+    } else {
+      result
+    }
+  }
+
+  val bucketOptions: BucketOptions = {
+    val linearBuckets = BucketOptions.Linear.newBuilder()
+      .setNumFiniteBuckets(numFiniteBuckets)
+      .setWidth(width)
+      .setOffset(offset)
+      .build()
+
+    BucketOptions.newBuilder()
+      .setLinearBuckets(linearBuckets)
+      .build()
+  }
 }

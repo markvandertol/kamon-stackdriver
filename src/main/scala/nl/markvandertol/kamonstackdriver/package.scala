@@ -1,8 +1,10 @@
 package nl.markvandertol
 
+import java.time.Instant
 import java.util.concurrent.Executor
 
 import com.google.api.core.ApiFuture
+import com.google.protobuf.Timestamp
 
 import scala.concurrent.{ Future, Promise }
 import scala.language.implicitConversions
@@ -24,5 +26,12 @@ package object kamonstackdriver {
       }
     }, executor)
     promise.future
+  }
+
+  private[kamonstackdriver] def instantToTimestamp(instant: Instant): Timestamp = {
+    Timestamp.newBuilder()
+      .setSeconds(instant.getEpochSecond)
+      .setNanos(instant.getNano)
+      .build()
   }
 }
