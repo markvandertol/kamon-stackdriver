@@ -10,7 +10,7 @@ Supported releases and dependencies are shown below.
 
 | kamon  | status | jdk  | scala            | google-cloud-monitoring | google-cloud-trace |
 |:------:|:------:|:----:|:----------------:|:----------------:|:----------------:|
-|  1.0.0-RC4 | unstable | 1.8+ | 2.10, 2.11, 2.12  | 0.30.0-beta | 0.30.0-beta
+|  1.1.2 | unstable | 1.8+ | 2.10, 2.11, 2.12  | 0.37.0-beta | 0.37.0-beta
 
 This library isn't available in as a JAR in a repository at this phase.
 
